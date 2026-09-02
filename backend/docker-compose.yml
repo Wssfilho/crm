@@ -1,0 +1,13 @@
+services:
+  postgres:
+    container_name: postgres-crm-iniciais
+    image: postgres
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: docker
+      POSTGRES_DB: crm
+      PGDATA: /data/postgres
+    volumes:
+      - ./data/postgres:/data/postgres
