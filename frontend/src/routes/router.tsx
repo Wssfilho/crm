@@ -1,8 +1,11 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '@/layouts/app-layout';
 import { AuthLayout } from '@/layouts/auth-layout';
-import { Dashboard } from '@/pages/dashboard';
+import { Clientes } from '@/pages/clientes';
+import { FeatureFutura } from '@/pages/feature-futura';
+import { Kanban } from '@/pages/kanban';
 import { NotFound } from '@/pages/not-found';
+import { PainelN8n } from '@/pages/painel-n8n';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
 import { ProtectedRoute } from './protected-route';
@@ -12,9 +15,13 @@ export const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       {
-        path: '/',
         element: <AppLayout />,
-        children: [{ path: '/', element: <Dashboard /> }],
+        children: [
+          { path: '/', element: <Clientes /> },
+          { path: '/kanban', element: <Kanban /> },
+          { path: '/painel', element: <PainelN8n /> },
+          { path: '/em-breve/:feature', element: <FeatureFutura /> },
+        ],
       },
     ],
   },

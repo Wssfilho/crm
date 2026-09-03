@@ -1,19 +1,89 @@
 @import 'tailwindcss';
 
 @theme {
-  --color-brand-50: oklch(0.97 0.02 255);
-  --color-brand-100: oklch(0.93 0.04 255);
-  --color-brand-300: oklch(0.78 0.1 255);
-  --color-brand-500: oklch(0.58 0.16 255);
-  --color-brand-600: oklch(0.5 0.16 255);
-  --color-brand-700: oklch(0.42 0.14 255);
-  --color-brand-900: oklch(0.28 0.09 255);
+  --font-sans: 'Public Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, Menlo, Monaco, 'Courier New', monospace;
 
-  --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  /* Marca */
+  --color-brand-50: #eef0fe;
+  --color-brand-100: #dcdcfb;
+  --color-brand-200: #e0e2fb;
+  --color-brand-500: #6366f1;
+  --color-brand-600: #4f46e5;
+  --color-brand-700: #4338ca;
+  --color-brand-800: #3730a3;
+
+  /* Superfícies */
+  --color-canvas: #eef1f5;
+  --color-panel-muted: #f8fafc;
+  --color-panel-subtle: #fbfcfe;
+  --color-panel-selected: #f6f7ff;
+  --color-panel-acao: #fbfbff;
+
+  /* Linhas */
+  --color-line: #e4e9f0;
+  --color-line-strong: #e2e7ee;
+  --color-line-soft: #eef1f5;
+  --color-line-faint: #f2f5f9;
+  --color-line-card: #eaeef3;
+  --color-line-muted: #e6ebf1;
+
+  /* Texto */
+  --color-ink: #16232f;
+  --color-ink-strong: #0e2137;
+  --color-ink-muted: #42546b;
+  --color-ink-soft: #5b6b7d;
+  --color-ink-body: #728599;
+  --color-ink-faint: #7286aa;
+  --color-ink-dim: #8394a6;
+  --color-ink-pale: #94a3b4;
+  --color-ink-ghost: #a5b3c4;
+  --color-ink-outline: #c2cede;
+
+  /* Sidebar */
+  --color-sidebar: #0e2137;
+  --color-sidebar-text: #aebccb;
+  --color-sidebar-dim: #7f93a8;
+  --color-sidebar-label: #5c7089;
+  --color-sidebar-dash: #3f5670;
+  --color-sidebar-avatar: #26405c;
+  --color-sidebar-avatar-ink: #dbe6f0;
+  --color-sidebar-user: #e6edf4;
+
+  /* Status de triagem */
+  --color-status-acao: #15925f;
+  --color-status-fila: #4f46e5;
+  --color-status-neutro: #94a3b4;
+
+  /* Quadro kanban */
+  --color-board: #e8ecf2;
+  --color-board-line: #dde4ec;
+
+  /* Acentos */
+  --color-success-surface: #f0fdf6;
+  --color-success-surface-alt: #eafaf1;
+  --color-success-line: #bfe9cf;
+  --color-success-chip: #e4f6ec;
+  --color-warn-line: #fcd88a;
+  --color-future: #8f7bd8;
 }
 
 @layer base {
   body {
-    @apply bg-slate-50 text-slate-900 antialiased;
+    @apply bg-canvas font-sans text-ink antialiased;
+  }
+
+  ::-webkit-scrollbar {
+    width: 9px;
+    height: 9px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #cfd8e3;
+    border-radius: 9px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
   }
 }

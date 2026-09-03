@@ -1,55 +1,27 @@
-import { LogOut } from 'lucide-react';
-import { NavLink, Outlet } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { useAuth } from '@/hooks/use-auth';
-import { cn } from '@/lib/utils';
-
-const navigation = [{ label: 'Painel', to: '/' }];
+import { Outlet } from 'react-router-dom';
+import { ExportarCsvDialog } from '@/components/crm/exportar-csv-dialog';
+import { NovoClienteDialog } from '@/components/crm/novo-cliente-dialog';
+import { Sidebar } from '@/components/crm/sidebar';
+import { Topbar } from '@/components/crm/topbar';
+import { TriagemProvider } from '@/contexts/triagem-provider';
 
 export function AppLayout() {
-  const { user, signOut } = useAuth();
-
   return (
-    <div className="flex min-h-screen">
-      <aside className="hidden w-60 shrink-0 border-r border-slate-200 bg-white p-4 md:block">
-        <span className="block px-2 text-lg font-bold text-brand-700">
-          CRM Iniciais
-        </span>
+    <TriagemProvider>
+      <div className="flex h-screen overflow-hidden">
+        <Sidebar />
 
-        <nav className="mt-6 space-y-1">
-          {navigation.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={({ isActive }) =>
-                cn(
-                  'block rounded-lg px-3 py-2 text-sm font-medium transition-colors',
-                  isActive
-                    ? 'bg-brand-50 text-brand-700'
-                    : 'text-slate-600 hover:bg-slate-100',
-                )
-              }
-            >
-              {item.label}
-            </NavLink>
-          ))}
-        </nav>
-      </aside>
+        <div className="flex min-w-0 flex-1 flex-col">
+          <Topbar />
 
-      <div className="flex flex-1 flex-col">
-        <header className="flex h-16 items-center justify-between border-b border-slate-200 bg-white px-6">
-          <span className="text-sm text-slate-500">{user?.name}</span>
-
-          <Button variant="ghost" onClick={signOut}>
-            <LogOut className="size-4" />
-            Sair
-          </Button>
-        </header>
-
-        <main className="flex-1 p-6">
-          <Outlet />
-        </main>
+          <div className="flex-1 overflow-y-auto px-[30px] pt-6 pb-11">
+            <Outlet />
+          </div>
+        </div>
       </div>
-    </div>
+
+      <ExportarCsvDialog />
+      <NovoClienteDialog />
+    </TriagemProvider>
   );
 }

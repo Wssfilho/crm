@@ -18,3 +18,98 @@ model User {
 
   @@map("users")
 }
+
+enum StatusTriagem {
+  ACAO
+  PENDENTE
+  LIMPO_PRODUTO
+  LIMPO_CLIENTE
+
+  @@map("status_triagem")
+}
+
+enum ColunaKanban {
+  NOVO
+  DOCS
+  ANALISE
+  TRIADO
+  APTO
+
+  @@map("coluna_kanban")
+}
+
+model Produto {
+  id        String    @id @default(uuid())
+  slug      String    @unique
+  name      String
+  mono      String
+  gradiente String
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  clientes Cliente[]
+
+  @@map("produtos")
+}
+
+model Cliente {
+  id              String        @id @default(uuid())
+  name            String
+  cpf             String        @unique
+  nascimento      DateTime?     @db.Date
+  telefone        String?
+  municipio       String?
+  nb              String
+  especie         String?
+  rendaEmCentavos Int?          @map("renda_em_centavos")
+  status          StatusTriagem
+  coluna          ColunaKanban
+  contratos       Int           @default(0)
+  valorEmCentavos Int           @default(0) @map("valor_em_centavos")
+  arquivada       Boolean       @default(false)
+
+  procuracao         Boolean @default(false)
+  extratoBeneficio   Boolean @default(false) @map("extrato_beneficio")
+  extratoEmprestimos Boolean @default(false) @map("extrato_emprestimos")
+
+  produtoId String?   @map("produto_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  produto Produto?       @relation(fields: [produtoId], references: [id])
+  acoes   AcaoJudicial[]
+
+  @@map("clientes")
+}
+
+model AcaoJudicial {
+  id        String @id @default(uuid())
+  name      String
+  base      String
+  ordem     Int
+  clienteId String @map("cliente_id")
+
+  cliente Cliente @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+
+  @@map("acoes_judiciais")
+}
+
+model ExecucaoDiaria {
+  id                String   @id @default(uuid())
+  data              DateTime @unique @db.Date
+  comAcao           Int      @map("com_acao")
+  semIrregularidade Int      @map("sem_irregularidade")
+
+  @@map("execucoes_diarias")
+}
+
+model Workflow {
+  id             String    @id @default(uuid())
+  nome           String    @unique
+  ativo          Boolean   @default(true)
+  sincronizadoEm DateTime? @map("sincronizado_em")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime? @updatedAt @map("updated_at")
+
+  @@map("workflows")
+}

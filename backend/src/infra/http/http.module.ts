@@ -6,11 +6,31 @@ import { UsersRepository } from '@/domain/account/application/repositories/users
 import { Encrypter } from '@/domain/account/application/cryptography/encrypter';
 import { HashComparer } from '@/domain/account/application/cryptography/hash-comparer';
 import { HashGenerator } from '@/domain/account/application/cryptography/hash-generator';
+import { ClientesRepository } from '@/domain/triagem/application/repositories/clientes-repository';
+import { ExecucoesRepository } from '@/domain/triagem/application/repositories/execucoes-repository';
+import { ProdutosRepository } from '@/domain/triagem/application/repositories/produtos-repository';
+import { WorkflowRepository } from '@/domain/triagem/application/repositories/workflow-repository';
+import { AlternarWorkflowUseCase } from '@/domain/triagem/application/use-cases/alternar-workflow';
+import { ArquivarTriagemUseCase } from '@/domain/triagem/application/use-cases/arquivar-triagem';
+import { CriarClienteUseCase } from '@/domain/triagem/application/use-cases/criar-cliente';
+import { DeletarClienteUseCase } from '@/domain/triagem/application/use-cases/deletar-cliente';
+import { FetchClientesUseCase } from '@/domain/triagem/application/use-cases/fetch-clientes';
+import { FetchPainelUseCase } from '@/domain/triagem/application/use-cases/fetch-painel';
+import { FetchProdutosUseCase } from '@/domain/triagem/application/use-cases/fetch-produtos';
+import { MarcarClienteAptoUseCase } from '@/domain/triagem/application/use-cases/marcar-cliente-apto';
 import { CryptographyModule } from '@/infra/cryptography/cryptography.module';
 import { PrismaModule } from '@/infra/prisma/prisma.module';
+import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
+import { ArquivarTriagemController } from './controllers/arquivar-triagem.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
+import { CriarClienteController } from './controllers/criar-cliente.controller';
+import { DeletarClienteController } from './controllers/deletar-cliente.controller';
+import { FetchClientesController } from './controllers/fetch-clientes.controller';
+import { FetchPainelController } from './controllers/fetch-painel.controller';
+import { FetchProdutosController } from './controllers/fetch-produtos.controller';
 import { GetProfileController } from './controllers/get-profile.controller';
+import { MarcarClienteAptoController } from './controllers/marcar-cliente-apto.controller';
 
 @Module({
   imports: [PrismaModule, CryptographyModule],
@@ -18,6 +38,14 @@ import { GetProfileController } from './controllers/get-profile.controller';
     CreateAccountController,
     AuthenticateController,
     GetProfileController,
+    FetchClientesController,
+    CriarClienteController,
+    DeletarClienteController,
+    FetchProdutosController,
+    MarcarClienteAptoController,
+    ArquivarTriagemController,
+    FetchPainelController,
+    AlternarWorkflowController,
   ],
   providers: [
     {
@@ -43,6 +71,56 @@ import { GetProfileController } from './controllers/get-profile.controller';
       useFactory: (usersRepository: UsersRepository) =>
         new GetUserProfileUseCase(usersRepository),
       inject: [UsersRepository],
+    },
+    {
+      provide: FetchClientesUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new FetchClientesUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: CriarClienteUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new CriarClienteUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: DeletarClienteUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new DeletarClienteUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: FetchProdutosUseCase,
+      useFactory: (produtosRepository: ProdutosRepository) =>
+        new FetchProdutosUseCase(produtosRepository),
+      inject: [ProdutosRepository],
+    },
+    {
+      provide: MarcarClienteAptoUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new MarcarClienteAptoUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: ArquivarTriagemUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new ArquivarTriagemUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: FetchPainelUseCase,
+      useFactory: (
+        execucoesRepository: ExecucoesRepository,
+        workflowRepository: WorkflowRepository,
+      ) => new FetchPainelUseCase(execucoesRepository, workflowRepository),
+      inject: [ExecucoesRepository, WorkflowRepository],
+    },
+    {
+      provide: AlternarWorkflowUseCase,
+      useFactory: (workflowRepository: WorkflowRepository) =>
+        new AlternarWorkflowUseCase(workflowRepository),
+      inject: [WorkflowRepository],
     },
   ],
 })
