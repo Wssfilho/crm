@@ -161,6 +161,11 @@ export class Cliente extends Entity<ClienteProps> {
     this.touch();
   }
 
+  moverParaColuna(coluna: ColunaKanban) {
+    this.props.coluna = coluna;
+    this.touch();
+  }
+
   arquivar() {
     this.props.arquivada = true;
     this.touch();

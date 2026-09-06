@@ -2,6 +2,7 @@ import { createContext } from 'react';
 import type { FiltroDeTriagem } from '@/lib/triagem';
 import type {
   Cliente,
+  ColunaKanban,
   ExecucaoDiaria,
   NovoCliente,
   Produto,
@@ -35,6 +36,7 @@ export interface TriagemContextValue {
   selecionar: (id: string) => void;
 
   marcarApto: () => void;
+  moverColuna: (clienteId: string, coluna: ColunaKanban) => void;
   arquivar: () => void;
   deletarCliente: (cliente: Cliente) => void;
 

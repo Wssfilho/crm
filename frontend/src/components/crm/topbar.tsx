@@ -1,12 +1,21 @@
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { Search, X } from 'lucide-react';
 import { useTriagem } from '@/hooks/use-triagem';
 import { tituloDaRota } from '@/lib/navegacao';
 
 export function Topbar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
   const { busca, definirBusca, abrirCsv, abrirNovo } = useTriagem();
 
   const titulo = tituloDaRota(pathname);
+
+  const aoMudarBusca = (valor: string) => {
+    definirBusca(valor);
+    if (valor.trim() && pathname !== '/' && pathname !== '/kanban') {
+      navigate('/');
+    }
+  };
 
   return (
     <header className="flex shrink-0 items-center gap-4 border-b border-line-strong bg-white px-[30px] py-[15px]">
@@ -20,15 +29,32 @@ export function Topbar() {
       </div>
 
       <div className="ml-auto flex items-center gap-2.5">
-        <div className="flex h-[38px] w-[250px] items-center gap-2 rounded-[10px] border border-line-strong bg-panel-muted px-3">
-          <div className="size-[13px] shrink-0 rounded-full border-[1.8px] border-ink-ghost" />
+        <div className="group flex h-[38px] w-[270px] items-center gap-2 rounded-[10px] border border-line-strong bg-panel-muted px-3 transition-all duration-150 focus-within:border-brand-500 focus-within:bg-white focus-within:ring-2 focus-within:ring-brand-500/20">
+          <Search className="size-4 shrink-0 text-ink-ghost transition-colors group-focus-within:text-brand-500" />
 
           <input
             value={busca}
-            onChange={(event) => definirBusca(event.target.value)}
+            onChange={(event) => aoMudarBusca(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === 'Escape') {
+                definirBusca('');
+              }
+            }}
             placeholder="Buscar cliente, CPF ou benefício"
             className="w-full border-none bg-transparent text-[12.5px] text-ink outline-none placeholder:text-ink-ghost"
           />
+
+          {busca && (
+            <button
+              type="button"
+              onClick={() => definirBusca('')}
+              title="Limpar busca (Esc)"
+              aria-label="Limpar busca"
+              className="flex size-4 shrink-0 cursor-pointer items-center justify-center rounded-full text-ink-ghost transition-colors hover:bg-line-muted hover:text-ink"
+            >
+              <X className="size-3" />
+            </button>
+          )}
         </div>
 
         <button

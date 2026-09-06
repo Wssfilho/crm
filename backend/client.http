@@ -27,3 +27,14 @@ Content-Type: application/json
 GET {{baseurl}}/me
 Content-Type: application/json
 Authorization: Bearer {{authToken}}
+
+###
+# @name moverColuna
+PATCH {{baseurl}}/clientes/ID_DO_CLIENTE/coluna
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "coluna": "DOCS"
+}
+

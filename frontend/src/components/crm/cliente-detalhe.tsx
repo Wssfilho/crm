@@ -52,6 +52,15 @@ export function ClienteDetalhe() {
   } = useTriagem();
 
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
+  const [fechandoModal, setFechandoModal] = useState(false);
+
+  const fecharModalExclusao = () => {
+    setFechandoModal(true);
+    setTimeout(() => {
+      setConfirmandoExclusao(false);
+      setFechandoModal(false);
+    }, 180);
+  };
 
   const rodape = (
     <div className="flex items-center gap-2 border-t border-line-soft bg-panel-subtle px-[18px] py-3">
@@ -71,8 +80,16 @@ export function ClienteDetalhe() {
     return (
       <div className="sticky top-0 overflow-hidden rounded-2xl border border-line bg-white">
         <PainelVazio
-          titulo="Nenhum cliente na carteira."
-          descricao="Cadastre um cliente para iniciar a triagem."
+          titulo={
+            totalDeClientes === 0
+              ? 'Nenhum cliente na carteira.'
+              : 'Nenhum cliente selecionado.'
+          }
+          descricao={
+            totalDeClientes === 0
+              ? 'Cadastre um cliente para iniciar a triagem.'
+              : 'Nenhum cliente corresponde aos critérios de busca ou filtro.'
+          }
         />
         {rodape}
       </div>
@@ -118,12 +135,18 @@ export function ClienteDetalhe() {
 
       {confirmandoExclusao && (
         <div
-          onClick={() => setConfirmandoExclusao(false)}
-          className="fixed inset-0 z-55 flex items-center justify-center bg-[rgba(14,33,55,.55)] p-8"
+          onClick={fecharModalExclusao}
+          className={cn(
+            'fixed inset-0 z-55 flex items-center justify-center bg-[rgba(14,33,55,.55)] p-8 backdrop-blur-[2px]',
+            fechandoModal ? 'animate-fade-out' : 'animate-fade-in',
+          )}
         >
           <div
             onClick={(event) => event.stopPropagation()}
-            className="w-[min(420px,100%)] overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)]"
+            className={cn(
+              'w-[min(420px,100%)] overflow-hidden rounded-2xl bg-white shadow-[0_30px_80px_-20px_rgba(0,0,0,.5)]',
+              fechandoModal ? 'animate-modal-out' : 'animate-modal-pop',
+            )}
           >
             <div className="px-[22px] pt-[22px] pb-4">
               <div className="text-[15px] font-extrabold text-ink-strong">
@@ -139,8 +162,8 @@ export function ClienteDetalhe() {
             <div className="flex justify-end gap-2.5 border-t border-line-soft bg-panel-subtle px-[22px] py-4">
               <button
                 type="button"
-                onClick={() => setConfirmandoExclusao(false)}
-                className="cursor-pointer rounded-[11px] border border-line-strong bg-white px-4 py-[11px] text-[13px] font-bold text-ink-soft"
+                onClick={fecharModalExclusao}
+                className="cursor-pointer rounded-[11px] border border-line-strong bg-white px-4 py-[11px] text-[13px] font-bold text-ink-soft transition-all duration-150 hover:bg-slate-50 active:scale-[0.98]"
               >
                 Cancelar
               </button>
@@ -148,10 +171,10 @@ export function ClienteDetalhe() {
               <button
                 type="button"
                 onClick={() => {
-                  setConfirmandoExclusao(false);
+                  fecharModalExclusao();
                   deletarCliente(clienteSelecionado);
                 }}
-                className="cursor-pointer rounded-[11px] bg-red-600 px-[18px] py-[11px] text-[13px] font-extrabold text-white"
+                className="cursor-pointer rounded-[11px] bg-red-600 px-[18px] py-[11px] text-[13px] font-extrabold text-white shadow-sm transition-all duration-150 hover:bg-red-700 active:scale-[0.98]"
               >
                 Excluir
               </button>
@@ -220,7 +243,7 @@ export function ClienteDetalhe() {
             </div>
           </div>
 
-          <div className="mt-3.5 flex gap-[9px]">
+          <div className="mt-3.5 flex gap-2.25">
             <button
               type="button"
               onClick={marcarApto}

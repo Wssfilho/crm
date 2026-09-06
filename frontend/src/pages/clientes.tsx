@@ -27,6 +27,8 @@ export function Clientes() {
     totalDeClientes,
     filtro,
     definirFiltro,
+    busca,
+    definirBusca,
     clienteSelecionado,
     selecionar,
     produtoDe,
@@ -76,13 +78,27 @@ export function Clientes() {
               <div className="text-sm font-bold text-ink-muted">
                 {totalDeClientes === 0
                   ? 'Nenhum cliente na carteira ainda.'
-                  : 'Nenhum cliente para este filtro.'}
+                  : busca
+                    ? `Nenhum cliente encontrado para “${busca}”.`
+                    : 'Nenhum cliente para este filtro.'}
               </div>
               <div className="mt-1.5 text-xs text-ink-dim">
                 {totalDeClientes === 0
                   ? 'Use “+ Novo cliente” para cadastrar o primeiro e enviá-lo à triagem.'
-                  : 'Ajuste a busca ou escolha outro filtro.'}
+                  : busca
+                    ? 'Verifique se digitou o nome, CPF ou número do benefício corretamente.'
+                    : 'Ajuste a busca ou escolha outro filtro.'}
               </div>
+
+              {busca && (
+                <button
+                  type="button"
+                  onClick={() => definirBusca('')}
+                  className="mt-3.5 cursor-pointer rounded-[9px] border border-line-strong bg-white px-3.5 py-1.5 text-xs font-bold text-ink-soft transition-colors hover:bg-panel-muted hover:text-ink"
+                >
+                  Limpar busca
+                </button>
+              )}
             </div>
           )}
 

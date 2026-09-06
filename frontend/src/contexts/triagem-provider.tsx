@@ -13,7 +13,7 @@ import {
   atendeAoFiltro,
   type FiltroDeTriagem,
 } from '@/lib/triagem';
-import type { Cliente, NovoCliente } from '@/types/triagem';
+import type { Cliente, ColunaKanban, NovoCliente } from '@/types/triagem';
 import {
   TriagemContext,
   type ContagensDeTriagem,
@@ -87,6 +87,48 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
       ),
   });
 
+  const { mutate: moverColunaRequest } = useMutation({
+    mutationFn: ({
+      clienteId,
+      coluna,
+    }: {
+      clienteId: string;
+      coluna: ColunaKanban;
+    }) => api.patch(`/clientes/${clienteId}/coluna`, { coluna }),
+    onMutate: async ({ clienteId, coluna }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.clientes });
+
+      const previousClientes = queryClient.getQueryData<Cliente[]>(
+        queryKeys.clientes,
+      );
+
+      if (previousClientes) {
+        queryClient.setQueryData<Cliente[]>(
+          queryKeys.clientes,
+          previousClientes.map((cliente) =>
+            cliente.id === clienteId ? { ...cliente, coluna } : cliente,
+          ),
+        );
+      }
+
+      return { previousClientes };
+    },
+    onError: (erro, _variables, context) => {
+      if (context?.previousClientes) {
+        queryClient.setQueryData(queryKeys.clientes, context.previousClientes);
+      }
+
+      tratarFalha(
+        erro,
+        'Não foi possível mover o cliente.',
+        'Esse cliente já não está mais na carteira.',
+      );
+    },
+    onSettled: () => {
+      void invalidarClientes();
+    },
+  });
+
   const { mutate: arquivarRequest } = useMutation({
     mutationFn: (clienteId: string) =>
       api.patch(`/clientes/${clienteId}/arquivar`),
@@ -138,13 +180,14 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
   }, [clientes]);
 
   const clientesFiltrados = useMemo(() => {
-    const termo = busca.trim().toLowerCase();
+    const termo = busca.trim();
 
     return clientes.filter(
       (cliente) =>
-        atendeAoFiltro(cliente.status, filtro) && atendeABusca(cliente, termo),
+        atendeAoFiltro(cliente.status, filtro) &&
+        atendeABusca(cliente, termo, produtos),
     );
-  }, [busca, clientes, filtro]);
+  }, [busca, clientes, filtro, produtos]);
 
   const totalAnalisado = useMemo(
     () => clientes.filter((cliente) => cliente.status !== 'PENDENTE').length,
@@ -153,8 +196,9 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
 
   const clienteSelecionado = useMemo(
     () =>
-      clientes.find((cliente) => cliente.id === selecionadoId) ?? clientes[0],
-    [clientes, selecionadoId],
+      clientesFiltrados.find((cliente) => cliente.id === selecionadoId) ??
+      clientesFiltrados[0],
+    [clientesFiltrados, selecionadoId],
   );
 
   const produtoDe = useCallback(
@@ -182,6 +226,13 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
 
     mostrarToast(`${primeiroNome} movido para “Apto para ação”.`);
   }, [clienteSelecionado, marcarAptoRequest, mostrarToast]);
+
+  const moverColuna = useCallback(
+    (clienteId: string, coluna: ColunaKanban) => {
+      moverColunaRequest({ clienteId, coluna });
+    },
+    [moverColunaRequest],
+  );
 
   const arquivar = useCallback(() => {
     if (!clienteSelecionado) {
@@ -276,6 +327,7 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
       clienteSelecionado,
       selecionar,
       marcarApto,
+      moverColuna,
       arquivar,
       deletarCliente,
       novoAberto,
@@ -303,6 +355,7 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
     clienteSelecionado,
     selecionar,
     marcarApto,
+    moverColuna,
     arquivar,
     deletarCliente,
     novoAberto,

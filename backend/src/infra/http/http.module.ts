@@ -18,6 +18,7 @@ import { FetchClientesUseCase } from '@/domain/triagem/application/use-cases/fet
 import { FetchPainelUseCase } from '@/domain/triagem/application/use-cases/fetch-painel';
 import { FetchProdutosUseCase } from '@/domain/triagem/application/use-cases/fetch-produtos';
 import { MarcarClienteAptoUseCase } from '@/domain/triagem/application/use-cases/marcar-cliente-apto';
+import { MoverColunaClienteUseCase } from '@/domain/triagem/application/use-cases/mover-coluna-cliente';
 import { CryptographyModule } from '@/infra/cryptography/cryptography.module';
 import { PrismaModule } from '@/infra/prisma/prisma.module';
 import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
@@ -31,6 +32,7 @@ import { FetchPainelController } from './controllers/fetch-painel.controller';
 import { FetchProdutosController } from './controllers/fetch-produtos.controller';
 import { GetProfileController } from './controllers/get-profile.controller';
 import { MarcarClienteAptoController } from './controllers/marcar-cliente-apto.controller';
+import { MoverColunaClienteController } from './controllers/mover-coluna-cliente.controller';
 
 @Module({
   imports: [PrismaModule, CryptographyModule],
@@ -43,6 +45,7 @@ import { MarcarClienteAptoController } from './controllers/marcar-cliente-apto.c
     DeletarClienteController,
     FetchProdutosController,
     MarcarClienteAptoController,
+    MoverColunaClienteController,
     ArquivarTriagemController,
     FetchPainelController,
     AlternarWorkflowController,
@@ -100,6 +103,12 @@ import { MarcarClienteAptoController } from './controllers/marcar-cliente-apto.c
       provide: MarcarClienteAptoUseCase,
       useFactory: (clientesRepository: ClientesRepository) =>
         new MarcarClienteAptoUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: MoverColunaClienteUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new MoverColunaClienteUseCase(clientesRepository),
       inject: [ClientesRepository],
     },
     {
