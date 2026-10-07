@@ -13,7 +13,11 @@ import { ClientePresenter } from '@/infra/http/presenters/cliente-presenter';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
 
 const editarClienteBodySchema = z.object({
-  driveUrl: z.string().url().nullable().optional(),
+  driveUrl: z
+    .url({ protocol: /^https?$/ })
+    .max(2048)
+    .nullable()
+    .optional(),
   observacao: z.string().trim().max(280).nullable().optional(),
   responsavelId: z.string().uuid().nullable().optional(),
 });

@@ -36,6 +36,14 @@ export class InMemoryClientesRepository implements ClientesRepository {
     this.items[itemIndex] = cliente;
   }
 
+  async saveEtapa(cliente: Cliente) {
+    await this.save(cliente);
+  }
+
+  async saveDetalhes(cliente: Cliente) {
+    await this.save(cliente);
+  }
+
   async create(cliente: Cliente) {
     this.items.push(cliente);
   }

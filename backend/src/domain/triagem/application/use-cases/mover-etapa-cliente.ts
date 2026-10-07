@@ -1,6 +1,7 @@
 import { Either, left, right } from '@/core/either';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { ResourceNotFoundError } from '@/core/errors/errors/resource-not-found-error';
+import { UsersRepository } from '@/domain/account/application/repositories/users-repository';
 import {
   Cliente,
   EtapaCliente,
@@ -21,7 +22,10 @@ type MoverEtapaClienteUseCaseResponse = Either<
 >;
 
 export class MoverEtapaClienteUseCase {
-  constructor(private clientesRepository: ClientesRepository) {}
+  constructor(
+    private clientesRepository: ClientesRepository,
+    private usersRepository: UsersRepository,
+  ) {}
 
   async execute({
     clienteId,
@@ -34,9 +38,15 @@ export class MoverEtapaClienteUseCase {
       return left(new ResourceNotFoundError());
     }
 
+    const usuario = await this.usersRepository.findById(usuarioId);
+
+    if (!usuario) {
+      return left(new ResourceNotFoundError());
+    }
+
     cliente.moverParaEtapa(etapa, new UniqueEntityID(usuarioId));
 
-    await this.clientesRepository.save(cliente);
+    await this.clientesRepository.saveEtapa(cliente);
 
     return right({
       cliente,

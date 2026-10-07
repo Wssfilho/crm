@@ -142,9 +142,11 @@ import { MoverEtapaClienteController } from './controllers/mover-etapa-cliente.c
     },
     {
       provide: MoverEtapaClienteUseCase,
-      useFactory: (clientesRepository: ClientesRepository) =>
-        new MoverEtapaClienteUseCase(clientesRepository),
-      inject: [ClientesRepository],
+      useFactory: (
+        clientesRepository: ClientesRepository,
+        usersRepository: UsersRepository,
+      ) => new MoverEtapaClienteUseCase(clientesRepository, usersRepository),
+      inject: [ClientesRepository, UsersRepository],
     },
     {
       provide: EditarClienteUseCase,

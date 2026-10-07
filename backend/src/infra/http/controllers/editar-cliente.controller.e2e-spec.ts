@@ -145,4 +145,39 @@ describe('EditarClienteController (E2E)', () => {
 
     expect(clienteOnDatabase?.responsavelId).toBeNull();
   });
+
+  test('[PATCH] /clientes/:clienteId - should reject a link that is not http or https', async () => {
+    const user = await prisma.user.create({
+      data: {
+        name: 'Elisa Comercial',
+        email: 'elisa@advocacia.com.br',
+        password: '123456',
+      },
+    });
+
+    const token = jwt.sign({ sub: user.id });
+
+    const cliente = await prisma.cliente.create({
+      data: {
+        name: 'Lúcia Helena',
+        cpf: '45011780350',
+        nb: '1510084427',
+        status: 'PENDENTE',
+        coluna: 'NOVO',
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/clientes/${cliente.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ driveUrl: 'javascript:alert(1)' });
+
+    expect(response.status).toBe(400);
+
+    const clienteOnDatabase = await prisma.cliente.findUnique({
+      where: { id: cliente.id },
+    });
+
+    expect(clienteOnDatabase?.driveUrl).toBeNull();
+  });
 });

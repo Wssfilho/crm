@@ -52,6 +52,20 @@ export class PrismaClientesRepository implements ClientesRepository {
     });
   }
 
+  async saveEtapa(cliente: Cliente) {
+    await this.prisma.cliente.update({
+      where: { id: cliente.id.toString() },
+      data: PrismaClienteMapper.toPrismaEtapa(cliente),
+    });
+  }
+
+  async saveDetalhes(cliente: Cliente) {
+    await this.prisma.cliente.update({
+      where: { id: cliente.id.toString() },
+      data: PrismaClienteMapper.toPrismaDetalhes(cliente),
+    });
+  }
+
   async create(cliente: Cliente) {
     const data = PrismaClienteMapper.toPrismaCreate(cliente);
 

@@ -30,13 +30,25 @@ function toScalars(cliente: Cliente) {
     procuracao: cliente.procuracao,
     extratoBeneficio: cliente.extratoBeneficio,
     extratoEmprestimos: cliente.extratoEmprestimos,
+    createdAt: cliente.createdAt,
+    updatedAt: cliente.updatedAt,
+  };
+}
+
+function toEtapa(cliente: Cliente) {
+  return {
     etapa: cliente.etapa,
+    movidoPorId: cliente.movidoPorId?.toString() ?? null,
+    movidoEm: cliente.movidoEm ?? null,
+    updatedAt: cliente.updatedAt,
+  };
+}
+
+function toDetalhes(cliente: Cliente) {
+  return {
     driveUrl: cliente.driveUrl ?? null,
     observacao: cliente.observacao ?? null,
     responsavelId: cliente.responsavelId?.toString() ?? null,
-    movidoPorId: cliente.movidoPorId?.toString() ?? null,
-    movidoEm: cliente.movidoEm ?? null,
-    createdAt: cliente.createdAt,
     updatedAt: cliente.updatedAt,
   };
 }
@@ -91,6 +103,10 @@ export class PrismaClienteMapper {
     );
   }
 
+  /**
+   * Não inclui os campos do andamento: eles mudam por mais de uma pessoa ao
+   * mesmo tempo e só são gravados por `toPrismaEtapa` e `toPrismaDetalhes`.
+   */
   static toPrisma(cliente: Cliente): Prisma.ClienteUncheckedUpdateInput {
     return {
       id: cliente.id.toString(),
@@ -98,10 +114,22 @@ export class PrismaClienteMapper {
     };
   }
 
+  static toPrismaEtapa(cliente: Cliente): Prisma.ClienteUncheckedUpdateInput {
+    return toEtapa(cliente);
+  }
+
+  static toPrismaDetalhes(
+    cliente: Cliente,
+  ): Prisma.ClienteUncheckedUpdateInput {
+    return toDetalhes(cliente);
+  }
+
   static toPrismaCreate(cliente: Cliente): Prisma.ClienteUncheckedCreateInput {
     return {
       id: cliente.id.toString(),
       ...toScalars(cliente),
+      ...toEtapa(cliente),
+      ...toDetalhes(cliente),
     };
   }
 }

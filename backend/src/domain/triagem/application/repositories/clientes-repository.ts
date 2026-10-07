@@ -5,6 +5,8 @@ export abstract class ClientesRepository {
   abstract findByCpf(cpf: string): Promise<Cliente | null>;
   abstract findMany(): Promise<Cliente[]>;
   abstract save(cliente: Cliente): Promise<void>;
+  abstract saveEtapa(cliente: Cliente): Promise<void>;
+  abstract saveDetalhes(cliente: Cliente): Promise<void>;
   abstract create(cliente: Cliente): Promise<void>;
   abstract delete(cliente: Cliente): Promise<void>;
 }

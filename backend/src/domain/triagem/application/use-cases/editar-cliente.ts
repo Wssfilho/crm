@@ -59,7 +59,7 @@ export class EditarClienteUseCase {
         : undefined;
     }
 
-    await this.clientesRepository.save(cliente);
+    await this.clientesRepository.saveDetalhes(cliente);
 
     return right({
       cliente,
