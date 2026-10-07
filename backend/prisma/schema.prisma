@@ -16,6 +16,9 @@ model User {
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
+  clientesResponsavel Cliente[] @relation("ClienteResponsavel")
+  clientesMovidos     Cliente[] @relation("ClienteMovidoPor")
+
   @@map("users")
 }
 
@@ -36,6 +39,14 @@ enum ColunaKanban {
   APTO
 
   @@map("coluna_kanban")
+}
+
+enum EtapaCliente {
+  COMERCIAL
+  PROTOCOLO
+  CONCLUIDO
+
+  @@map("etapa_cliente")
 }
 
 model Produto {
@@ -72,12 +83,21 @@ model Cliente {
   extratoBeneficio   Boolean @default(false) @map("extrato_beneficio")
   extratoEmprestimos Boolean @default(false) @map("extrato_emprestimos")
 
+  etapa         EtapaCliente @default(COMERCIAL)
+  driveUrl      String?      @map("drive_url")
+  observacao    String?
+  responsavelId String?      @map("responsavel_id")
+  movidoPorId   String?      @map("movido_por_id")
+  movidoEm      DateTime?    @map("movido_em")
+
   produtoId String?   @map("produto_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  produto Produto?       @relation(fields: [produtoId], references: [id])
-  acoes   AcaoJudicial[]
+  produto     Produto?       @relation(fields: [produtoId], references: [id])
+  acoes       AcaoJudicial[]
+  responsavel User?          @relation("ClienteResponsavel", fields: [responsavelId], references: [id], onDelete: SetNull)
+  movidoPor   User?          @relation("ClienteMovidoPor", fields: [movidoPorId], references: [id], onDelete: SetNull)
 
   @@map("clientes")
 }

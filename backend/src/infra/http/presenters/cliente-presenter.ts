@@ -22,6 +22,12 @@ export class ClientePresenter {
       procuracao: cliente.procuracao,
       extratoBeneficio: cliente.extratoBeneficio,
       extratoEmprestimos: cliente.extratoEmprestimos,
+      etapa: cliente.etapa,
+      driveUrl: cliente.driveUrl ?? null,
+      observacao: cliente.observacao ?? null,
+      responsavelId: cliente.responsavelId?.toString() ?? null,
+      movidoPorId: cliente.movidoPorId?.toString() ?? null,
+      movidoEm: cliente.movidoEm ?? null,
       acoes: cliente.acoes.map((acao) => ({
         id: acao.id.toString(),
         name: acao.name,

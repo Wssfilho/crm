@@ -10,6 +10,8 @@ export type StatusEfetivo = StatusTriagem | 'ARQUIVADO';
 
 export type ColunaKanban = 'NOVO' | 'DOCS' | 'ANALISE' | 'TRIADO' | 'APTO';
 
+export type EtapaCliente = 'COMERCIAL' | 'PROTOCOLO' | 'CONCLUIDO';
+
 const MILISSEGUNDOS_POR_ANO = 1000 * 60 * 60 * 24 * 365.25;
 
 export interface ClienteProps {
@@ -31,6 +33,12 @@ export interface ClienteProps {
   extratoBeneficio: boolean;
   extratoEmprestimos: boolean;
   acoes: AcaoJudicial[];
+  etapa: EtapaCliente;
+  driveUrl?: string;
+  observacao?: string;
+  responsavelId?: UniqueEntityID;
+  movidoPorId?: UniqueEntityID;
+  movidoEm?: Date;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -108,6 +116,30 @@ export class Cliente extends Entity<ClienteProps> {
     return this.props.acoes;
   }
 
+  get etapa() {
+    return this.props.etapa;
+  }
+
+  get driveUrl() {
+    return this.props.driveUrl;
+  }
+
+  get observacao() {
+    return this.props.observacao;
+  }
+
+  get responsavelId() {
+    return this.props.responsavelId;
+  }
+
+  get movidoPorId() {
+    return this.props.movidoPorId;
+  }
+
+  get movidoEm() {
+    return this.props.movidoEm;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
@@ -156,6 +188,33 @@ export class Cliente extends Entity<ClienteProps> {
     this.props.updatedAt = new Date();
   }
 
+  set driveUrl(driveUrl: string | undefined) {
+    this.props.driveUrl = driveUrl;
+    this.touch();
+  }
+
+  set observacao(observacao: string | undefined) {
+    this.props.observacao = observacao;
+    this.touch();
+  }
+
+  set responsavelId(responsavelId: UniqueEntityID | undefined) {
+    this.props.responsavelId = responsavelId;
+    this.touch();
+  }
+
+  /** Registra quem levou o cliente para outra etapa; mesma etapa não conta. */
+  moverParaEtapa(etapa: EtapaCliente, movidoPorId: UniqueEntityID) {
+    if (this.props.etapa === etapa) {
+      return;
+    }
+
+    this.props.etapa = etapa;
+    this.props.movidoPorId = movidoPorId;
+    this.props.movidoEm = new Date();
+    this.touch();
+  }
+
   marcarComoApto() {
     this.props.coluna = 'APTO';
     this.touch();
@@ -183,6 +242,7 @@ export class Cliente extends Entity<ClienteProps> {
       | 'extratoBeneficio'
       | 'extratoEmprestimos'
       | 'acoes'
+      | 'etapa'
       | 'createdAt'
     >,
     id?: UniqueEntityID,
@@ -199,6 +259,7 @@ export class Cliente extends Entity<ClienteProps> {
         extratoBeneficio: props.extratoBeneficio ?? false,
         extratoEmprestimos: props.extratoEmprestimos ?? false,
         acoes: props.acoes ?? [],
+        etapa: props.etapa ?? 'COMERCIAL',
         createdAt: props.createdAt ?? new Date(),
       },
       id,

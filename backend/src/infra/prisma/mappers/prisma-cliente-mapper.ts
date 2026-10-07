@@ -30,6 +30,12 @@ function toScalars(cliente: Cliente) {
     procuracao: cliente.procuracao,
     extratoBeneficio: cliente.extratoBeneficio,
     extratoEmprestimos: cliente.extratoEmprestimos,
+    etapa: cliente.etapa,
+    driveUrl: cliente.driveUrl ?? null,
+    observacao: cliente.observacao ?? null,
+    responsavelId: cliente.responsavelId?.toString() ?? null,
+    movidoPorId: cliente.movidoPorId?.toString() ?? null,
+    movidoEm: cliente.movidoEm ?? null,
     createdAt: cliente.createdAt,
     updatedAt: cliente.updatedAt,
   };
@@ -68,6 +74,16 @@ export class PrismaClienteMapper {
             new UniqueEntityID(acao.id),
           ),
         ),
+        etapa: raw.etapa,
+        driveUrl: raw.driveUrl ?? undefined,
+        observacao: raw.observacao ?? undefined,
+        responsavelId: raw.responsavelId
+          ? new UniqueEntityID(raw.responsavelId)
+          : undefined,
+        movidoPorId: raw.movidoPorId
+          ? new UniqueEntityID(raw.movidoPorId)
+          : undefined,
+        movidoEm: raw.movidoEm ?? undefined,
         createdAt: raw.createdAt,
         updatedAt: raw.updatedAt ?? undefined,
       },
