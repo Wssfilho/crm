@@ -37,4 +37,8 @@ export class InMemoryUsersRepository implements UsersRepository {
 
     this.items[itemIndex] = user;
   }
+
+  async delete(user: User) {
+    this.items = this.items.filter((item) => !item.id.equals(user.id));
+  }
 }

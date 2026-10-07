@@ -1,5 +1,6 @@
 import { Trash2 } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
+import { useAuth } from '@/hooks/use-auth';
 import { useTriagem } from '@/hooks/use-triagem';
 import {
   formatarMoeda,
@@ -50,6 +51,8 @@ export function ClienteDetalhe() {
     totalAnalisado,
     totalDeClientes,
   } = useTriagem();
+
+  const { isAdmin } = useAuth();
 
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [fechandoModal, setFechandoModal] = useState(false);
@@ -123,17 +126,19 @@ export function ClienteDetalhe() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => setConfirmandoExclusao(true)}
-          title="Excluir cliente"
-          className="ml-auto flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[9px] border border-line-strong bg-white text-ink-pale transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
-        >
-          <Trash2 className="size-[15px]" />
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={() => setConfirmandoExclusao(true)}
+            title="Excluir cliente"
+            className="ml-auto flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[9px] border border-line-strong bg-white text-ink-pale transition-colors hover:border-red-200 hover:bg-red-50 hover:text-red-600"
+          >
+            <Trash2 className="size-[15px]" />
+          </button>
+        )}
       </div>
 
-      {confirmandoExclusao && (
+      {isAdmin && confirmandoExclusao && (
         <div
           onClick={fecharModalExclusao}
           className={cn(
@@ -252,13 +257,15 @@ export function ClienteDetalhe() {
               Marcar como apto
             </button>
 
-            <button
-              type="button"
-              onClick={abrirCsv}
-              className="cursor-pointer rounded-[11px] border border-line-strong bg-white px-3.5 py-3 text-[12.5px] font-bold text-ink-soft"
-            >
-              Exportar
-            </button>
+            {isAdmin && (
+              <button
+                type="button"
+                onClick={abrirCsv}
+                className="cursor-pointer rounded-[11px] border border-line-strong bg-white px-3.5 py-3 text-[12.5px] font-bold text-ink-soft"
+              >
+                Exportar
+              </button>
+            )}
           </div>
 
           <div className="mt-2.5 text-center text-[11px] leading-[1.5] text-ink-pale">

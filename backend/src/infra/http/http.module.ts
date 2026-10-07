@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
-import { FetchUsuariosUseCase } from '@/domain/account/application/use-cases/fetch-usuarios';
+import { ChangeUserRoleUseCase } from '@/domain/account/application/use-cases/change-user-role';
+import { DeleteUserUseCase } from '@/domain/account/application/use-cases/delete-user';
+import { FetchUsersUseCase } from '@/domain/account/application/use-cases/fetch-users';
+import { ResetUserPasswordUseCase } from '@/domain/account/application/use-cases/reset-user-password';
+import { ChangeUserPasswordUseCase } from '@/domain/account/application/use-cases/change-user-password';
+import { EditUserProfileUseCase } from '@/domain/account/application/use-cases/edit-user-profile';
 import { AuthenticateUserUseCase } from '@/domain/account/application/use-cases/authenticate-user';
 import { GetUserProfileUseCase } from '@/domain/account/application/use-cases/get-user-profile';
 import { RegisterUserUseCase } from '@/domain/account/application/use-cases/register-user';
@@ -27,10 +32,17 @@ import { PrismaModule } from '@/infra/prisma/prisma.module';
 import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
 import { ArquivarTriagemController } from './controllers/arquivar-triagem.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
+import { ChangeUserRoleController } from './controllers/change-user-role.controller';
+import { CreateUserController } from './controllers/create-user.controller';
+import { DeleteUserController } from './controllers/delete-user.controller';
+import { FetchUsersController } from './controllers/fetch-users.controller';
+import { ResetUserPasswordController } from './controllers/reset-user-password.controller';
+import { ChangePasswordController } from './controllers/change-password.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CriarClienteController } from './controllers/criar-cliente.controller';
 import { EditarClienteController } from './controllers/editar-cliente.controller';
 import { DeletarClienteController } from './controllers/deletar-cliente.controller';
+import { EditProfileController } from './controllers/edit-profile.controller';
 import { FetchClientesController } from './controllers/fetch-clientes.controller';
 import { FetchPainelController } from './controllers/fetch-painel.controller';
 import { FetchUsuariosController } from './controllers/fetch-usuarios.controller';
@@ -46,6 +58,13 @@ import { MoverEtapaClienteController } from './controllers/mover-etapa-cliente.c
     CreateAccountController,
     AuthenticateController,
     GetProfileController,
+    EditProfileController,
+    ChangePasswordController,
+    FetchUsersController,
+    CreateUserController,
+    ChangeUserRoleController,
+    ResetUserPasswordController,
+    DeleteUserController,
     FetchClientesController,
     CriarClienteController,
     DeletarClienteController,
@@ -82,6 +101,52 @@ import { MoverEtapaClienteController } from './controllers/mover-etapa-cliente.c
       provide: GetUserProfileUseCase,
       useFactory: (usersRepository: UsersRepository) =>
         new GetUserProfileUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: EditUserProfileUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new EditUserProfileUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ChangeUserPasswordUseCase,
+      useFactory: (
+        usersRepository: UsersRepository,
+        hashComparer: HashComparer,
+        hashGenerator: HashGenerator,
+      ) =>
+        new ChangeUserPasswordUseCase(
+          usersRepository,
+          hashComparer,
+          hashGenerator,
+        ),
+      inject: [UsersRepository, HashComparer, HashGenerator],
+    },
+    {
+      provide: FetchUsersUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new FetchUsersUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ChangeUserRoleUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new ChangeUserRoleUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ResetUserPasswordUseCase,
+      useFactory: (
+        usersRepository: UsersRepository,
+        hashGenerator: HashGenerator,
+      ) => new ResetUserPasswordUseCase(usersRepository, hashGenerator),
+      inject: [UsersRepository, HashGenerator],
+    },
+    {
+      provide: DeleteUserUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new DeleteUserUseCase(usersRepository),
       inject: [UsersRepository],
     },
     {
@@ -155,12 +220,6 @@ import { MoverEtapaClienteController } from './controllers/mover-etapa-cliente.c
         usersRepository: UsersRepository,
       ) => new EditarClienteUseCase(clientesRepository, usersRepository),
       inject: [ClientesRepository, UsersRepository],
-    },
-    {
-      provide: FetchUsuariosUseCase,
-      useFactory: (usersRepository: UsersRepository) =>
-        new FetchUsuariosUseCase(usersRepository),
-      inject: [UsersRepository],
     },
   ],
 })

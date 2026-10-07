@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Search, X } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 import { useTriagem } from '@/hooks/use-triagem';
 import { tituloDaRota } from '@/lib/navegacao';
 
@@ -7,6 +8,7 @@ export function Topbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const { busca, definirBusca, abrirCsv, abrirNovo } = useTriagem();
+  const { isAdmin } = useAuth();
 
   const titulo = tituloDaRota(pathname);
 
@@ -57,14 +59,16 @@ export function Topbar() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={abrirCsv}
-          className="flex h-[38px] cursor-pointer items-center gap-2 rounded-[10px] border border-success-line bg-success-surface px-[15px] text-[12.5px] font-bold text-green-700"
-        >
-          <span className="size-[13px] shrink-0 rounded-[3px] border-[1.8px] border-green-600" />
-          Exportar CSV
-        </button>
+        {isAdmin && (
+          <button
+            type="button"
+            onClick={abrirCsv}
+            className="flex h-[38px] cursor-pointer items-center gap-2 rounded-[10px] border border-success-line bg-success-surface px-[15px] text-[12.5px] font-bold text-green-700"
+          >
+            <span className="size-[13px] shrink-0 rounded-[3px] border-[1.8px] border-green-600" />
+            Exportar CSV
+          </button>
+        )}
 
         <button
           type="button"

@@ -1,18 +1,18 @@
 import { Either, right } from '@/core/either';
-import { UsersRepository } from '@/domain/account/application/repositories/users-repository';
 import { User } from '@/domain/account/enterprise/entities/user';
+import { UsersRepository } from '../repositories/users-repository';
 
-type FetchUsuariosUseCaseResponse = Either<
+type FetchUsersUseCaseResponse = Either<
   null,
   {
     users: User[];
   }
 >;
 
-export class FetchUsuariosUseCase {
+export class FetchUsersUseCase {
   constructor(private usersRepository: UsersRepository) {}
 
-  async execute(): Promise<FetchUsuariosUseCaseResponse> {
+  async execute(): Promise<FetchUsersUseCaseResponse> {
     const users = await this.usersRepository.findMany();
 
     return right({

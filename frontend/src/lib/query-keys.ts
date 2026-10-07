@@ -3,4 +3,5 @@ export const queryKeys = {
   produtos: ['produtos'] as const,
   painel: ['painel'] as const,
   usuarios: ['usuarios'] as const,
+  users: ['users'] as const,
 };
