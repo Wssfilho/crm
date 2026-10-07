@@ -24,6 +24,10 @@ export class InMemoryUsersRepository implements UsersRepository {
     return user;
   }
 
+  async findMany() {
+    return [...this.items].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   async create(user: User) {
     this.items.push(user);
   }
