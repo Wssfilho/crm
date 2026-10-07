@@ -9,6 +9,10 @@ export function tituloDaRota(pathname: string): string {
     return 'Painel n8n';
   }
 
+  if (pathname.startsWith('/conta')) {
+    return 'Minha conta';
+  }
+
   if (pathname.startsWith('/em-breve/')) {
     const id = pathname.split('/')[2] as FeatureFuturaId;
 

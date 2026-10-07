@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import { AppLayout } from '@/layouts/app-layout';
 import { AuthLayout } from '@/layouts/auth-layout';
 import { Clientes } from '@/pages/clientes';
+import { Conta } from '@/pages/conta';
 import { FeatureFutura } from '@/pages/feature-futura';
 import { Kanban } from '@/pages/kanban';
 import { NotFound } from '@/pages/not-found';
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
           { path: '/', element: <Clientes /> },
           { path: '/kanban', element: <Kanban /> },
           { path: '/painel', element: <PainelN8n /> },
+          { path: '/conta', element: <Conta /> },
           { path: '/em-breve/:feature', element: <FeatureFutura /> },
         ],
       },

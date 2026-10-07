@@ -66,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoadingUser,
       signIn,
       signOut,
+      updateUser: setUser,
     }),
     [user, isLoadingUser, signIn, signOut],
   );

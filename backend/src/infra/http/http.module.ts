@@ -1,4 +1,6 @@
 import { Module } from '@nestjs/common';
+import { ChangeUserPasswordUseCase } from '@/domain/account/application/use-cases/change-user-password';
+import { EditUserProfileUseCase } from '@/domain/account/application/use-cases/edit-user-profile';
 import { AuthenticateUserUseCase } from '@/domain/account/application/use-cases/authenticate-user';
 import { GetUserProfileUseCase } from '@/domain/account/application/use-cases/get-user-profile';
 import { RegisterUserUseCase } from '@/domain/account/application/use-cases/register-user';
@@ -24,9 +26,11 @@ import { PrismaModule } from '@/infra/prisma/prisma.module';
 import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
 import { ArquivarTriagemController } from './controllers/arquivar-triagem.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
+import { ChangePasswordController } from './controllers/change-password.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CriarClienteController } from './controllers/criar-cliente.controller';
 import { DeletarClienteController } from './controllers/deletar-cliente.controller';
+import { EditProfileController } from './controllers/edit-profile.controller';
 import { FetchClientesController } from './controllers/fetch-clientes.controller';
 import { FetchPainelController } from './controllers/fetch-painel.controller';
 import { FetchProdutosController } from './controllers/fetch-produtos.controller';
@@ -40,6 +44,8 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
     CreateAccountController,
     AuthenticateController,
     GetProfileController,
+    EditProfileController,
+    ChangePasswordController,
     FetchClientesController,
     CriarClienteController,
     DeletarClienteController,
@@ -74,6 +80,26 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
       useFactory: (usersRepository: UsersRepository) =>
         new GetUserProfileUseCase(usersRepository),
       inject: [UsersRepository],
+    },
+    {
+      provide: EditUserProfileUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new EditUserProfileUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ChangeUserPasswordUseCase,
+      useFactory: (
+        usersRepository: UsersRepository,
+        hashComparer: HashComparer,
+        hashGenerator: HashGenerator,
+      ) =>
+        new ChangeUserPasswordUseCase(
+          usersRepository,
+          hashComparer,
+          hashGenerator,
+        ),
+      inject: [UsersRepository, HashComparer, HashGenerator],
     },
     {
       provide: FetchClientesUseCase,
