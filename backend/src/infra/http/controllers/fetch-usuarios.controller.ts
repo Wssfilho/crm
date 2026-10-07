@@ -12,6 +12,8 @@ export class FetchUsuariosController {
   async handle() {
     const result = await this.fetchUsuarios.execute();
 
-    return { usuarios: result.value?.users.map(UserPresenter.toHTTP) ?? [] };
+    const users = result.value?.users ?? [];
+
+    return { usuarios: users.map((user) => UserPresenter.toHTTP(user)) };
   }
 }
