@@ -85,3 +85,20 @@ Um módulo novo do CRM entra sempre pelo domínio, nunca pelo controller:
 7. No front: página em `src/pages/`, rota em `src/routes/router.tsx`, chamada em `src/lib/`.
 
 O passo a passo detalhado está em `.claude/conventions/07-checklists.md`.
+
+## Deploy (Render + Vercel)
+
+- **API + Postgres** no Render, descritos em `render.yaml` (Blueprint).
+  O build roda `prisma generate` e o `preDeployCommand` aplica `prisma migrate deploy`.
+- **Frontend** na Vercel, com *Root Directory* `frontend` e a env `VITE_API_URL`
+  apontando para a URL da API. O `frontend/vercel.json` faz o fallback das rotas da SPA.
+
+Variáveis da API no Render:
+
+| Variável | Valor |
+| --- | --- |
+| `JWT_PRIVATE_KEY` / `JWT_PUBLIC_KEY` | base64 de um par de chaves **exclusivo de produção** |
+| `CORS_ORIGIN` | URL do frontend na Vercel (várias separadas por vírgula) |
+| `ALLOW_SIGN_UP` | `true` só até criar as contas; depois `false` (bloqueia `POST /accounts`) |
+
+Não rode o `seed` em produção: ele apaga clientes e produtos antes de inserir os dados de exemplo.

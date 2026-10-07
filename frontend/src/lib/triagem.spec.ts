@@ -132,7 +132,9 @@ describe('atendeABusca', () => {
   it('should return false when search term does not match any field', () => {
     expect(atendeABusca(mockCliente, 'Maria', mockProdutos)).toBe(false);
     expect(atendeABusca(mockCliente, '99999999999', mockProdutos)).toBe(false);
-    expect(atendeABusca(mockCliente, 'Florianopolis', mockProdutos)).toBe(false);
+    expect(atendeABusca(mockCliente, 'Florianopolis', mockProdutos)).toBe(
+      false,
+    );
   });
 });
 
