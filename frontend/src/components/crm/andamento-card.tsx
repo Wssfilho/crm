@@ -47,6 +47,11 @@ export function AndamentoCard({
           <div className="mt-0.5 text-[10.5px] text-ink-dim">
             CPF {cliente.cpf}
           </div>
+          {cliente.telefone && (
+            <div className="mt-0.5 text-[10.5px] text-ink-dim">
+              {cliente.telefone}
+            </div>
+          )}
         </div>
 
         <GripVertical className="size-3.5 shrink-0 text-ink-ghost opacity-0 transition-opacity group-hover:opacity-100" />

@@ -40,7 +40,18 @@ export interface Cliente {
   acoes: AcaoJudicial[];
 }
 
-export interface EdicaoDeCliente {
+export interface DadosDoCliente {
+  name: string;
+  cpf: string;
+  nascimento: string | null;
+  telefone: string | null;
+  municipio: string | null;
+  nb: string;
+  especie: string | null;
+  rendaEmCentavos: number | null;
+}
+
+export interface EdicaoDeCliente extends DadosDoCliente {
   driveUrl: string | null;
   observacao: string | null;
   responsavelId: string | null;
@@ -61,10 +72,10 @@ export interface NovoCliente {
   nb: string;
   especie?: string;
   rendaEmCentavos?: number;
-  procuracao: boolean;
-  extratoBeneficio: boolean;
-  extratoEmprestimos: boolean;
-  enviarParaAnalise: boolean;
+  procuracao?: boolean;
+  extratoBeneficio?: boolean;
+  extratoEmprestimos?: boolean;
+  enviarParaAnalise?: boolean;
 }
 
 export interface Produto {

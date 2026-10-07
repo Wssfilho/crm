@@ -321,12 +321,18 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
             aoConcluir();
             mostrarToast('Cliente atualizado.');
           },
-          onError: (erro) =>
+          onError: (erro) => {
+            if (isAxiosError(erro) && erro.response?.status === 409) {
+              mostrarToast('Já existe um cliente com esse CPF.');
+              return;
+            }
+
             tratarFalha(
               erro,
               'Não foi possível salvar as alterações.',
               'Esse cliente ou o responsável escolhido não existe mais.',
-            ),
+            );
+          },
         },
       );
     },
