@@ -2,6 +2,7 @@ import {
   LogOut,
   PanelLeftClose,
   PanelLeftOpen,
+  ShieldCheck,
   SquareKanban,
   Users,
   Workflow,
@@ -46,7 +47,7 @@ function lerPreferenciaRecolhida() {
 }
 
 export function Sidebar() {
-  const { user, signOut } = useAuth();
+  const { user, isAdmin, signOut } = useAuth();
   const { totalDeClientes } = useTriagem();
   const [recolhida, setRecolhida] = useState(lerPreferenciaRecolhida);
 
@@ -158,6 +159,45 @@ export function Sidebar() {
           </NavLink>
         ))}
       </nav>
+
+      {isAdmin && (
+        <>
+          {recolhida ? (
+            <div className="mx-auto my-3 h-px w-8 bg-white/[.07]" />
+          ) : (
+            <div className={tituloDeSecao}>Administração</div>
+          )}
+
+          <nav className="flex flex-col gap-[3px]">
+            <NavLink
+              to="/equipe"
+              title={recolhida ? 'Equipe' : undefined}
+              className={({ isActive }) =>
+                cn(
+                  'flex items-center gap-[11px] rounded-[9px] px-[11px] py-2.5 text-[13.5px] transition-colors',
+                  recolhida && 'justify-center',
+                  isActive
+                    ? 'bg-[linear-gradient(135deg,#4f46e5,#4338ca)] font-semibold text-white shadow-[0_6px_16px_rgba(79,70,229,.35)]'
+                    : 'font-medium text-sidebar-text',
+                )
+              }
+            >
+              {({ isActive }) => (
+                <>
+                  <ShieldCheck
+                    className={cn(
+                      'size-[17px] shrink-0',
+                      isActive ? 'text-white' : 'text-amber-400',
+                    )}
+                    strokeWidth={2}
+                  />
+                  {!recolhida && <span>Equipe</span>}
+                </>
+              )}
+            </NavLink>
+          </nav>
+        </>
+      )}
 
       {recolhida ? (
         <div className="mx-auto my-3 h-px w-8 bg-white/[.07]" />

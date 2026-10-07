@@ -24,6 +24,10 @@ export class InMemoryUsersRepository implements UsersRepository {
     return user;
   }
 
+  async findMany() {
+    return [...this.items].sort((a, b) => a.name.localeCompare(b.name));
+  }
+
   async create(user: User) {
     this.items.push(user);
   }
@@ -32,5 +36,9 @@ export class InMemoryUsersRepository implements UsersRepository {
     const itemIndex = this.items.findIndex((item) => item.id.equals(user.id));
 
     this.items[itemIndex] = user;
+  }
+
+  async delete(user: User) {
+    this.items = this.items.filter((item) => !item.id.equals(user.id));
   }
 }

@@ -9,6 +9,10 @@ export function tituloDaRota(pathname: string): string {
     return 'Painel n8n';
   }
 
+  if (pathname.startsWith('/equipe')) {
+    return 'Equipe';
+  }
+
   if (pathname.startsWith('/conta')) {
     return 'Minha conta';
   }

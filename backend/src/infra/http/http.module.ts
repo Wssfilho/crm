@@ -1,4 +1,8 @@
 import { Module } from '@nestjs/common';
+import { ChangeUserRoleUseCase } from '@/domain/account/application/use-cases/change-user-role';
+import { DeleteUserUseCase } from '@/domain/account/application/use-cases/delete-user';
+import { FetchUsersUseCase } from '@/domain/account/application/use-cases/fetch-users';
+import { ResetUserPasswordUseCase } from '@/domain/account/application/use-cases/reset-user-password';
 import { ChangeUserPasswordUseCase } from '@/domain/account/application/use-cases/change-user-password';
 import { EditUserProfileUseCase } from '@/domain/account/application/use-cases/edit-user-profile';
 import { AuthenticateUserUseCase } from '@/domain/account/application/use-cases/authenticate-user';
@@ -26,6 +30,11 @@ import { PrismaModule } from '@/infra/prisma/prisma.module';
 import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
 import { ArquivarTriagemController } from './controllers/arquivar-triagem.controller';
 import { AuthenticateController } from './controllers/authenticate.controller';
+import { ChangeUserRoleController } from './controllers/change-user-role.controller';
+import { CreateUserController } from './controllers/create-user.controller';
+import { DeleteUserController } from './controllers/delete-user.controller';
+import { FetchUsersController } from './controllers/fetch-users.controller';
+import { ResetUserPasswordController } from './controllers/reset-user-password.controller';
 import { ChangePasswordController } from './controllers/change-password.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CriarClienteController } from './controllers/criar-cliente.controller';
@@ -46,6 +55,11 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
     GetProfileController,
     EditProfileController,
     ChangePasswordController,
+    FetchUsersController,
+    CreateUserController,
+    ChangeUserRoleController,
+    ResetUserPasswordController,
+    DeleteUserController,
     FetchClientesController,
     CriarClienteController,
     DeletarClienteController,
@@ -100,6 +114,32 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
           hashGenerator,
         ),
       inject: [UsersRepository, HashComparer, HashGenerator],
+    },
+    {
+      provide: FetchUsersUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new FetchUsersUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ChangeUserRoleUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new ChangeUserRoleUseCase(usersRepository),
+      inject: [UsersRepository],
+    },
+    {
+      provide: ResetUserPasswordUseCase,
+      useFactory: (
+        usersRepository: UsersRepository,
+        hashGenerator: HashGenerator,
+      ) => new ResetUserPasswordUseCase(usersRepository, hashGenerator),
+      inject: [UsersRepository, HashGenerator],
+    },
+    {
+      provide: DeleteUserUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new DeleteUserUseCase(usersRepository),
+      inject: [UsersRepository],
     },
     {
       provide: FetchClientesUseCase,

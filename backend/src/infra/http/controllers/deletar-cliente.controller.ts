@@ -8,9 +8,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { DeletarClienteUseCase } from '@/domain/triagem/application/use-cases/deletar-cliente';
+import { Roles } from '@/infra/auth/roles.decorator';
+import { RolesGuard } from '@/infra/auth/roles.guard';
 
 @Controller('/clientes/:clienteId')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('jwt'), RolesGuard)
+@Roles('ADMIN')
 export class DeletarClienteController {
   constructor(private deletarCliente: DeletarClienteUseCase) {}
 

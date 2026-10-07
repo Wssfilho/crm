@@ -4,6 +4,7 @@ import { KeyRound, UserRound } from 'lucide-react';
 import { useState, type ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { SeloDePapel } from '@/components/crm/selo-de-papel';
 import { Button } from '@/components/ui/button';
 import { FormField } from '@/components/ui/form-field';
 import { Input } from '@/components/ui/input';
@@ -253,8 +254,11 @@ export function Conta() {
         </div>
 
         <div className="min-w-0">
-          <div className="truncate text-lg font-extrabold text-ink-strong">
-            {user.name}
+          <div className="flex items-center gap-2">
+            <span className="truncate text-lg font-extrabold text-ink-strong">
+              {user.name}
+            </span>
+            <SeloDePapel role={user.role} />
           </div>
           <div className="truncate text-sm text-ink-dim">{user.email}</div>
           <div className="mt-1 text-xs text-ink-pale">

@@ -32,6 +32,14 @@ export class PrismaUsersRepository implements UsersRepository {
     return PrismaUserMapper.toDomain(user);
   }
 
+  async findMany() {
+    const users = await this.prisma.user.findMany({
+      orderBy: { name: 'asc' },
+    });
+
+    return users.map((user) => PrismaUserMapper.toDomain(user));
+  }
+
   async create(user: User) {
     const data = PrismaUserMapper.toPrisma(user);
 
@@ -44,6 +52,12 @@ export class PrismaUsersRepository implements UsersRepository {
     await this.prisma.user.update({
       where: { id: data.id },
       data,
+    });
+  }
+
+  async delete(user: User) {
+    await this.prisma.user.delete({
+      where: { id: user.id.toString() },
     });
   }
 }

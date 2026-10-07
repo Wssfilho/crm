@@ -29,6 +29,27 @@ describe('Register User', () => {
     });
   });
 
+  it('should register a new user with the USER role by default', async () => {
+    await sut.execute({
+      name: 'Eric Melo',
+      email: 'eric@advocacia.com.br',
+      password: 'senha123',
+    });
+
+    expect(inMemoryUsersRepository.items[0].role).toBe('USER');
+  });
+
+  it('should be able to register a new user as admin', async () => {
+    await sut.execute({
+      name: 'Eric Melo',
+      email: 'eric@advocacia.com.br',
+      password: 'senha123',
+      role: 'ADMIN',
+    });
+
+    expect(inMemoryUsersRepository.items[0].isAdmin).toBe(true);
+  });
+
   it('should hash the user password upon registration', async () => {
     await sut.execute({
       name: 'Eric Melo',

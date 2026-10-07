@@ -3,12 +3,14 @@ import { AppLayout } from '@/layouts/app-layout';
 import { AuthLayout } from '@/layouts/auth-layout';
 import { Clientes } from '@/pages/clientes';
 import { Conta } from '@/pages/conta';
+import { Equipe } from '@/pages/equipe';
 import { FeatureFutura } from '@/pages/feature-futura';
 import { Kanban } from '@/pages/kanban';
 import { NotFound } from '@/pages/not-found';
 import { PainelN8n } from '@/pages/painel-n8n';
 import { SignIn } from '@/pages/sign-in';
 import { SignUp } from '@/pages/sign-up';
+import { AdminRoute } from './admin-route';
 import { ProtectedRoute } from './protected-route';
 
 export const router = createBrowserRouter([
@@ -22,6 +24,10 @@ export const router = createBrowserRouter([
           { path: '/kanban', element: <Kanban /> },
           { path: '/painel', element: <PainelN8n /> },
           { path: '/conta', element: <Conta /> },
+          {
+            element: <AdminRoute />,
+            children: [{ path: '/equipe', element: <Equipe /> }],
+          },
           { path: '/em-breve/:feature', element: <FeatureFutura /> },
         ],
       },

@@ -2,10 +2,13 @@ import { Entity } from '@/core/entities/entity';
 import { UniqueEntityID } from '@/core/entities/unique-entity-id';
 import { Optional } from '@/core/types/optional';
 
+export type UserRole = 'ADMIN' | 'USER';
+
 export interface UserProps {
   name: string;
   email: string;
   password: string;
+  role: UserRole;
   createdAt: Date;
   updatedAt?: Date;
 }
@@ -23,12 +26,20 @@ export class User extends Entity<UserProps> {
     return this.props.password;
   }
 
+  get role() {
+    return this.props.role;
+  }
+
   get createdAt() {
     return this.props.createdAt;
   }
 
   get updatedAt() {
     return this.props.updatedAt;
+  }
+
+  get isAdmin() {
+    return this.props.role === 'ADMIN';
   }
 
   private touch() {
@@ -50,10 +61,19 @@ export class User extends Entity<UserProps> {
     this.touch();
   }
 
-  static create(props: Optional<UserProps, 'createdAt'>, id?: UniqueEntityID) {
+  set role(role: UserRole) {
+    this.props.role = role;
+    this.touch();
+  }
+
+  static create(
+    props: Optional<UserProps, 'role' | 'createdAt'>,
+    id?: UniqueEntityID,
+  ) {
     const user = new User(
       {
         ...props,
+        role: props.role ?? 'USER',
         createdAt: props.createdAt ?? new Date(),
       },
       id,
