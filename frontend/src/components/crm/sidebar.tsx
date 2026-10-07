@@ -1,4 +1,4 @@
-import { LogOut, SquareKanban, Users, Workflow } from 'lucide-react';
+import { LogOut, SquareKanban } from 'lucide-react';
 import { NavLink } from 'react-router-dom';
 import { LogoEscritorio } from '@/components/crm/logo-escritorio';
 import { listaDeFeaturesFuturas } from '@/data/features-futuras';
@@ -10,18 +10,11 @@ import { cn } from '@/lib/utils';
 const navegacaoPrincipal = [
   {
     to: '/',
-    label: 'Clientes',
-    icon: Users,
-    tone: 'text-green-500',
-    comContador: true,
-  },
-  {
-    to: '/kanban',
-    label: 'Kanban de triagem',
+    label: 'Andamento',
     icon: SquareKanban,
     tone: 'text-brand-500',
+    comContador: true,
   },
-  { to: '/painel', label: 'Painel n8n', icon: Workflow, tone: 'text-sky-400' },
 ];
 
 const tituloDeSecao =

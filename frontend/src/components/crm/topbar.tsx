@@ -12,7 +12,7 @@ export function Topbar() {
 
   const aoMudarBusca = (valor: string) => {
     definirBusca(valor);
-    if (valor.trim() && pathname !== '/' && pathname !== '/kanban') {
+    if (valor.trim() && pathname !== '/') {
       navigate('/');
     }
   };
