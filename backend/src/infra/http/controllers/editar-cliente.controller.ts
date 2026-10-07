@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   NotFoundException,
   Param,
@@ -9,10 +10,20 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { z } from 'zod';
 import { EditarClienteUseCase } from '@/domain/triagem/application/use-cases/editar-cliente';
+import { ClienteAlreadyExistsError } from '@/domain/triagem/application/use-cases/errors/cliente-already-exists-error';
 import { ClientePresenter } from '@/infra/http/presenters/cliente-presenter';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
+import { dadosDoClienteSchema } from '@/infra/http/schemas/dados-do-cliente-schema';
 
 const editarClienteBodySchema = z.object({
+  name: dadosDoClienteSchema.name.optional(),
+  cpf: dadosDoClienteSchema.cpf.optional(),
+  nascimento: dadosDoClienteSchema.nascimento.nullable().optional(),
+  telefone: dadosDoClienteSchema.telefone.nullable().optional(),
+  municipio: dadosDoClienteSchema.municipio.nullable().optional(),
+  nb: dadosDoClienteSchema.nb.optional(),
+  especie: dadosDoClienteSchema.especie.nullable().optional(),
+  rendaEmCentavos: dadosDoClienteSchema.rendaEmCentavos.nullable().optional(),
   driveUrl: z
     .url({ protocol: /^https?$/ })
     .max(2048)
@@ -36,17 +47,23 @@ export class EditarClienteController {
     @Param('clienteId') clienteId: string,
     @Body(bodyValidationPipe) body: EditarClienteBodySchema,
   ) {
-    const { driveUrl, observacao, responsavelId } = body;
+    const { nascimento, ...dados } = body;
 
     const result = await this.editarCliente.execute({
       clienteId,
-      driveUrl,
-      observacao,
-      responsavelId,
+      ...dados,
+      nascimento:
+        typeof nascimento === 'string' ? new Date(nascimento) : nascimento,
     });
 
     if (result.isLeft()) {
-      throw new NotFoundException(result.value.message);
+      const error = result.value;
+
+      if (error instanceof ClienteAlreadyExistsError) {
+        throw new ConflictException('Já existe um cliente com esse CPF');
+      }
+
+      throw new NotFoundException(error.message);
     }
 
     return { cliente: ClientePresenter.toHTTP(result.value.cliente) };

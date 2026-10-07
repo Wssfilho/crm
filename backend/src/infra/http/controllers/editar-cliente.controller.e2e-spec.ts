@@ -180,4 +180,137 @@ describe('EditarClienteController (E2E)', () => {
 
     expect(clienteOnDatabase?.driveUrl).toBeNull();
   });
+
+  test('[PATCH] /clientes/:clienteId - should edit the cadastro and clear optional fields', async () => {
+    const user = await prisma.user.create({
+      data: {
+        name: 'Fábio Comercial',
+        email: 'fabio@advocacia.com.br',
+        password: '123456',
+      },
+    });
+
+    const token = jwt.sign({ sub: user.id });
+
+    const cliente = await prisma.cliente.create({
+      data: {
+        name: 'Raimundo Nonato',
+        cpf: '317.905.226-09',
+        nb: '1294407718',
+        telefone: '(73) 98888-0000',
+        status: 'PENDENTE',
+        coluna: 'NOVO',
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/clientes/${cliente.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({
+        name: 'Raimundo Nonato da Silva',
+        nascimento: '1952-05-20',
+        telefone: null,
+        municipio: 'Itabuna-BA',
+        especie: '41',
+        rendaEmCentavos: 151800,
+      });
+
+    expect(response.status).toBe(200);
+
+    const clienteOnDatabase = await prisma.cliente.findUnique({
+      where: { id: cliente.id },
+    });
+
+    expect(clienteOnDatabase).toEqual(
+      expect.objectContaining({
+        name: 'Raimundo Nonato da Silva',
+        cpf: '317.905.226-09',
+        nascimento: new Date('1952-05-20'),
+        telefone: null,
+        municipio: 'Itabuna-BA',
+        especie: '41',
+        rendaEmCentavos: 151800,
+      }),
+    );
+  });
+
+  test('[PATCH] /clientes/:clienteId - should return 409 for the cpf of another cliente', async () => {
+    const user = await prisma.user.create({
+      data: {
+        name: 'Gabi Comercial',
+        email: 'gabi@advocacia.com.br',
+        password: '123456',
+      },
+    });
+
+    const token = jwt.sign({ sub: user.id });
+
+    await prisma.cliente.create({
+      data: {
+        name: 'Edson Ferreira',
+        cpf: '208.554.331-67',
+        nb: '1346602213',
+        status: 'PENDENTE',
+        coluna: 'NOVO',
+      },
+    });
+
+    const cliente = await prisma.cliente.create({
+      data: {
+        name: 'Geralda Nunes',
+        cpf: '188.402.771-70',
+        nb: '1261148805',
+        status: 'PENDENTE',
+        coluna: 'NOVO',
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/clientes/${cliente.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ cpf: '208.554.331-67' });
+
+    expect(response.status).toBe(409);
+
+    const clienteOnDatabase = await prisma.cliente.findUnique({
+      where: { id: cliente.id },
+    });
+
+    expect(clienteOnDatabase?.cpf).toBe('188.402.771-70');
+  });
+
+  test('[PATCH] /clientes/:clienteId - should reject an invalid cpf', async () => {
+    const user = await prisma.user.create({
+      data: {
+        name: 'Hugo Comercial',
+        email: 'hugo@advocacia.com.br',
+        password: '123456',
+      },
+    });
+
+    const token = jwt.sign({ sub: user.id });
+
+    const cliente = await prisma.cliente.create({
+      data: {
+        name: 'Manoel dos Reis',
+        cpf: '221.640.877-80',
+        nb: '1407712204',
+        status: 'PENDENTE',
+        coluna: 'NOVO',
+      },
+    });
+
+    const response = await request(app.getHttpServer())
+      .patch(`/clientes/${cliente.id}`)
+      .set('Authorization', `Bearer ${token}`)
+      .send({ cpf: '111.111.111-11', name: 'X' });
+
+    expect(response.status).toBe(400);
+
+    const clienteOnDatabase = await prisma.cliente.findUnique({
+      where: { id: cliente.id },
+    });
+
+    expect(clienteOnDatabase?.cpf).toBe('221.640.877-80');
+  });
 });

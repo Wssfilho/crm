@@ -5,6 +5,7 @@ import { InMemoryUsersRepository } from 'test/repositories/in-memory-users-repos
 import { makeCliente } from 'test/factories/make-cliente';
 import { makeUser } from 'test/factories/make-user';
 import { EditarClienteUseCase } from './editar-cliente';
+import { ClienteAlreadyExistsError } from './errors/cliente-already-exists-error';
 
 let inMemoryClientesRepository: InMemoryClientesRepository;
 let inMemoryUsersRepository: InMemoryUsersRepository;
@@ -96,5 +97,73 @@ describe('Editar Cliente', () => {
     expect(result.isLeft()).toBe(true);
     expect(result.value).toBeInstanceOf(ResourceNotFoundError);
     expect(inMemoryClientesRepository.items[0].responsavelId).toBeUndefined();
+  });
+
+  it('should be able to edit the cadastro of a cliente', async () => {
+    inMemoryClientesRepository.items.push(
+      makeCliente(
+        { cpf: '517.204.933-91', telefone: '(73) 98888-0000' },
+        new UniqueEntityID('cliente-1'),
+      ),
+    );
+
+    const nascimento = new Date('1958-03-12');
+
+    const result = await sut.execute({
+      clienteId: 'cliente-1',
+      name: 'Maria Aparecida de Souza',
+      cpf: '042.318.765-17',
+      nascimento,
+      telefone: null,
+      municipio: 'Itabuna-BA',
+      nb: '142.887.001-5',
+      especie: '41',
+      rendaEmCentavos: 151800,
+    });
+
+    expect(result.isRight()).toBe(true);
+    expect(inMemoryClientesRepository.items[0]).toEqual(
+      expect.objectContaining({
+        name: 'Maria Aparecida de Souza',
+        cpf: '042.318.765-17',
+        nascimento,
+        telefone: undefined,
+        municipio: 'Itabuna-BA',
+        nb: '142.887.001-5',
+        especie: '41',
+        rendaEmCentavos: 151800,
+      }),
+    );
+  });
+
+  it('should be able to keep the same cpf when editing other fields', async () => {
+    inMemoryClientesRepository.items.push(
+      makeCliente({ cpf: '517.204.933-91' }, new UniqueEntityID('cliente-1')),
+    );
+
+    const result = await sut.execute({
+      clienteId: 'cliente-1',
+      cpf: '517.204.933-91',
+      municipio: 'Ilhéus-BA',
+    });
+
+    expect(result.isRight()).toBe(true);
+    expect(inMemoryClientesRepository.items[0].municipio).toBe('Ilhéus-BA');
+  });
+
+  it('should not be able to use the cpf of another cliente', async () => {
+    inMemoryClientesRepository.items.push(
+      makeCliente({ cpf: '517.204.933-91' }, new UniqueEntityID('cliente-1')),
+      makeCliente({ cpf: '042.318.765-17' }, new UniqueEntityID('cliente-2')),
+    );
+
+    const result = await sut.execute({
+      clienteId: 'cliente-1',
+      cpf: '042.318.765-17',
+    });
+
+    expect(result.isLeft()).toBe(true);
+    expect(result.value).toBeInstanceOf(ClienteAlreadyExistsError);
+    expect(inMemoryClientesRepository.items[0].cpf).toBe('517.204.933-91');
   });
 });

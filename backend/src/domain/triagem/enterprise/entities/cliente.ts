@@ -188,6 +188,46 @@ export class Cliente extends Entity<ClienteProps> {
     this.props.updatedAt = new Date();
   }
 
+  set name(name: string) {
+    this.props.name = name;
+    this.touch();
+  }
+
+  set cpf(cpf: string) {
+    this.props.cpf = cpf;
+    this.touch();
+  }
+
+  set nascimento(nascimento: Date | undefined) {
+    this.props.nascimento = nascimento;
+    this.touch();
+  }
+
+  set telefone(telefone: string | undefined) {
+    this.props.telefone = telefone;
+    this.touch();
+  }
+
+  set municipio(municipio: string | undefined) {
+    this.props.municipio = municipio;
+    this.touch();
+  }
+
+  set nb(nb: string) {
+    this.props.nb = nb;
+    this.touch();
+  }
+
+  set especie(especie: string | undefined) {
+    this.props.especie = especie;
+    this.touch();
+  }
+
+  set rendaEmCentavos(rendaEmCentavos: number | undefined) {
+    this.props.rendaEmCentavos = rendaEmCentavos;
+    this.touch();
+  }
+
   set driveUrl(driveUrl: string | undefined) {
     this.props.driveUrl = driveUrl;
     this.touch();

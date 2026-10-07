@@ -46,6 +46,14 @@ function toEtapa(cliente: Cliente) {
 
 function toDetalhes(cliente: Cliente) {
   return {
+    name: cliente.name,
+    cpf: cliente.cpf,
+    nascimento: cliente.nascimento ?? null,
+    telefone: cliente.telefone ?? null,
+    municipio: cliente.municipio ?? null,
+    nb: cliente.nb,
+    especie: cliente.especie ?? null,
+    rendaEmCentavos: cliente.rendaEmCentavos ?? null,
     driveUrl: cliente.driveUrl ?? null,
     observacao: cliente.observacao ?? null,
     responsavelId: cliente.responsavelId?.toString() ?? null,

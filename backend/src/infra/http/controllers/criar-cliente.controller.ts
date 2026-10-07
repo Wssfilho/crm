@@ -9,39 +9,21 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { z } from 'zod';
-import { cpfEhValido, nbEhValido } from '@/core/validation/cpf';
 import { CriarClienteUseCase } from '@/domain/triagem/application/use-cases/criar-cliente';
 import { ClienteAlreadyExistsError } from '@/domain/triagem/application/use-cases/errors/cliente-already-exists-error';
 import { ClientePresenter } from '@/infra/http/presenters/cliente-presenter';
 import { ZodValidationPipe } from '@/infra/http/pipes/zod-validation-pipe';
-
-const IDADE_MINIMA = 16;
-const IDADE_MAXIMA = 120;
-const ANO_EM_MS = 1000 * 60 * 60 * 24 * 365.25;
+import { dadosDoClienteSchema } from '@/infra/http/schemas/dados-do-cliente-schema';
 
 const criarClienteBodySchema = z.object({
-  name: z
-    .string()
-    .trim()
-    .min(3)
-    .refine((valor) => valor.split(/\s+/).filter(Boolean).length >= 2),
-  cpf: z.string().refine(cpfEhValido),
-  nascimento: z.iso
-    .date()
-    .refine((valor) => {
-      const idade = (Date.now() - new Date(valor).getTime()) / ANO_EM_MS;
-
-      return idade >= IDADE_MINIMA && idade <= IDADE_MAXIMA;
-    })
-    .optional(),
-  telefone: z
-    .string()
-    .refine((valor) => [10, 11].includes(valor.replace(/\D/g, '').length))
-    .optional(),
-  municipio: z.string().trim().min(2).optional(),
-  nb: z.string().refine(nbEhValido),
-  especie: z.string().trim().min(1).optional(),
-  rendaEmCentavos: z.number().int().positive().optional(),
+  name: dadosDoClienteSchema.name,
+  cpf: dadosDoClienteSchema.cpf,
+  nascimento: dadosDoClienteSchema.nascimento.optional(),
+  telefone: dadosDoClienteSchema.telefone.optional(),
+  municipio: dadosDoClienteSchema.municipio.optional(),
+  nb: dadosDoClienteSchema.nb,
+  especie: dadosDoClienteSchema.especie.optional(),
+  rendaEmCentavos: dadosDoClienteSchema.rendaEmCentavos.optional(),
   procuracao: z.boolean().optional(),
   extratoBeneficio: z.boolean().optional(),
   extratoEmprestimos: z.boolean().optional(),
