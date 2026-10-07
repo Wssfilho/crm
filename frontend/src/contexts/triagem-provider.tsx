@@ -6,6 +6,7 @@ import { useClientes } from '@/hooks/use-clientes';
 import { usePainel } from '@/hooks/use-painel';
 import { useProdutos } from '@/hooks/use-produtos';
 import { useToast } from '@/hooks/use-toast';
+import { useUsuarios } from '@/hooks/use-usuarios';
 import { api } from '@/lib/api';
 import { queryKeys } from '@/lib/query-keys';
 import {
@@ -13,7 +14,13 @@ import {
   atendeAoFiltro,
   type FiltroDeTriagem,
 } from '@/lib/triagem';
-import type { Cliente, ColunaKanban, NovoCliente } from '@/types/triagem';
+import type {
+  Cliente,
+  ColunaKanban,
+  EdicaoDeCliente,
+  EtapaCliente,
+  NovoCliente,
+} from '@/types/triagem';
 import {
   TriagemContext,
   type ContagensDeTriagem,
@@ -36,6 +43,7 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
   const clientesQuery = useClientes();
   const produtosQuery = useProdutos();
   const painelQuery = usePainel();
+  const usuariosQuery = useUsuarios();
 
   const [busca, definirBusca] = useState('');
   const [filtro, definirFiltro] = useState<FiltroDeTriagem>('todos');
@@ -51,6 +59,11 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
   const produtos = useMemo(
     () => produtosQuery.data ?? [],
     [produtosQuery.data],
+  );
+
+  const usuarios = useMemo(
+    () => usuariosQuery.data ?? [],
+    [usuariosQuery.data],
   );
 
   const invalidarClientes = useCallback(
@@ -127,6 +140,59 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
     onSettled: () => {
       void invalidarClientes();
     },
+  });
+
+  const { mutate: moverEtapaRequest } = useMutation({
+    mutationFn: ({
+      clienteId,
+      etapa,
+    }: {
+      clienteId: string;
+      etapa: EtapaCliente;
+    }) => api.patch(`/clientes/${clienteId}/etapa`, { etapa }),
+    onMutate: async ({ clienteId, etapa }) => {
+      await queryClient.cancelQueries({ queryKey: queryKeys.clientes });
+
+      const previousClientes = queryClient.getQueryData<Cliente[]>(
+        queryKeys.clientes,
+      );
+
+      if (previousClientes) {
+        queryClient.setQueryData<Cliente[]>(
+          queryKeys.clientes,
+          previousClientes.map((cliente) =>
+            cliente.id === clienteId ? { ...cliente, etapa } : cliente,
+          ),
+        );
+      }
+
+      return { previousClientes };
+    },
+    onError: (erro, _variables, context) => {
+      if (context?.previousClientes) {
+        queryClient.setQueryData(queryKeys.clientes, context.previousClientes);
+      }
+
+      tratarFalha(
+        erro,
+        'Não foi possível mover o cliente.',
+        'Esse cliente já não está mais na carteira.',
+      );
+    },
+    onSettled: () => {
+      void invalidarClientes();
+    },
+  });
+
+  const { mutate: editarClienteRequest, isPending: editando } = useMutation({
+    mutationFn: ({
+      clienteId,
+      dados,
+    }: {
+      clienteId: string;
+      dados: EdicaoDeCliente;
+    }) => api.patch(`/clientes/${clienteId}`, dados),
+    onSuccess: invalidarClientes,
   });
 
   const { mutate: arquivarRequest } = useMutation({
@@ -234,6 +300,39 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
     [moverColunaRequest],
   );
 
+  const usuarioDe = useCallback(
+    (id: string | null) => usuarios.find((usuario) => usuario.id === id),
+    [usuarios],
+  );
+
+  const moverEtapa = useCallback(
+    (clienteId: string, etapa: EtapaCliente) => {
+      moverEtapaRequest({ clienteId, etapa });
+    },
+    [moverEtapaRequest],
+  );
+
+  const editarCliente = useCallback(
+    (clienteId: string, dados: EdicaoDeCliente, aoConcluir: () => void) => {
+      editarClienteRequest(
+        { clienteId, dados },
+        {
+          onSuccess: () => {
+            aoConcluir();
+            mostrarToast('Cliente atualizado.');
+          },
+          onError: (erro) =>
+            tratarFalha(
+              erro,
+              'Não foi possível salvar as alterações.',
+              'Esse cliente ou o responsável escolhido não existe mais.',
+            ),
+        },
+      );
+    },
+    [editarClienteRequest, mostrarToast, tratarFalha],
+  );
+
   const arquivar = useCallback(() => {
     if (!clienteSelecionado) {
       return;
@@ -279,11 +378,7 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
           setNovoAberto(false);
           aoConcluir();
 
-          mostrarToast(
-            dados.enviarParaAnalise
-              ? `${dados.name} enviado para a análise n8n.`
-              : `${dados.name} salvo como rascunho.`,
-          );
+          mostrarToast(`${dados.name} entrou em Comercial.`);
         },
         onError: (erro) => {
           const conflito = isAxiosError(erro) && erro.response?.status === 409;
@@ -328,6 +423,11 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
       selecionar,
       marcarApto,
       moverColuna,
+      usuarios,
+      usuarioDe,
+      moverEtapa,
+      editarCliente,
+      editando,
       arquivar,
       deletarCliente,
       novoAberto,
@@ -356,6 +456,11 @@ export function TriagemProvider({ children }: { children: ReactNode }) {
     selecionar,
     marcarApto,
     moverColuna,
+    usuarios,
+    usuarioDe,
+    moverEtapa,
+    editarCliente,
+    editando,
     arquivar,
     deletarCliente,
     novoAberto,

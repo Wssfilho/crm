@@ -31,7 +31,6 @@ coverage/
 
 # Prisma / Postgres local
 backend/src/generated/
-data/
 backend/data/
 
 # Caches de ferramentas

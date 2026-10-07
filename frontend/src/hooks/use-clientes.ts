@@ -11,5 +11,7 @@ export function useClientes() {
 
       return data.clientes;
     },
+    refetchInterval: 30_000,
+    refetchOnWindowFocus: true,
   });
 }

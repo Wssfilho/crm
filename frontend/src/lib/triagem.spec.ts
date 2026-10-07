@@ -44,6 +44,12 @@ const mockCliente: Cliente = {
   procuracao: true,
   extratoBeneficio: true,
   extratoEmprestimos: true,
+  etapa: 'COMERCIAL',
+  driveUrl: null,
+  observacao: null,
+  responsavelId: null,
+  movidoPorId: null,
+  movidoEm: null,
   acoes: [
     {
       id: 'ac-1',

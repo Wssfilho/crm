@@ -3,9 +3,12 @@ import type { FiltroDeTriagem } from '@/lib/triagem';
 import type {
   Cliente,
   ColunaKanban,
+  EdicaoDeCliente,
+  EtapaCliente,
   ExecucaoDiaria,
   NovoCliente,
   Produto,
+  Usuario,
   Workflow,
 } from '@/types/triagem';
 
@@ -37,6 +40,16 @@ export interface TriagemContextValue {
 
   marcarApto: () => void;
   moverColuna: (clienteId: string, coluna: ColunaKanban) => void;
+
+  usuarios: Usuario[];
+  usuarioDe: (id: string | null) => Usuario | undefined;
+  moverEtapa: (clienteId: string, etapa: EtapaCliente) => void;
+  editarCliente: (
+    clienteId: string,
+    dados: EdicaoDeCliente,
+    aoConcluir: () => void,
+  ) => void;
+  editando: boolean;
   arquivar: () => void;
   deletarCliente: (cliente: Cliente) => void;
 

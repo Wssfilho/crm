@@ -3,6 +3,8 @@ export type StatusTriagem =
 
 export type ColunaKanban = 'NOVO' | 'DOCS' | 'ANALISE' | 'TRIADO' | 'APTO';
 
+export type EtapaCliente = 'COMERCIAL' | 'PROTOCOLO' | 'CONCLUIDO';
+
 export interface AcaoJudicial {
   id: string;
   name: string;
@@ -29,7 +31,25 @@ export interface Cliente {
   procuracao: boolean;
   extratoBeneficio: boolean;
   extratoEmprestimos: boolean;
+  etapa: EtapaCliente;
+  driveUrl: string | null;
+  observacao: string | null;
+  responsavelId: string | null;
+  movidoPorId: string | null;
+  movidoEm: string | null;
   acoes: AcaoJudicial[];
+}
+
+export interface EdicaoDeCliente {
+  driveUrl: string | null;
+  observacao: string | null;
+  responsavelId: string | null;
+}
+
+export interface Usuario {
+  id: string;
+  name: string;
+  email: string;
 }
 
 export interface NovoCliente {
