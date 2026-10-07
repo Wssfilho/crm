@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { FetchUsuariosUseCase } from '@/domain/account/application/use-cases/fetch-usuarios';
 import { AuthenticateUserUseCase } from '@/domain/account/application/use-cases/authenticate-user';
 import { GetUserProfileUseCase } from '@/domain/account/application/use-cases/get-user-profile';
 import { RegisterUserUseCase } from '@/domain/account/application/use-cases/register-user';
@@ -13,12 +14,14 @@ import { WorkflowRepository } from '@/domain/triagem/application/repositories/wo
 import { AlternarWorkflowUseCase } from '@/domain/triagem/application/use-cases/alternar-workflow';
 import { ArquivarTriagemUseCase } from '@/domain/triagem/application/use-cases/arquivar-triagem';
 import { CriarClienteUseCase } from '@/domain/triagem/application/use-cases/criar-cliente';
+import { EditarClienteUseCase } from '@/domain/triagem/application/use-cases/editar-cliente';
 import { DeletarClienteUseCase } from '@/domain/triagem/application/use-cases/deletar-cliente';
 import { FetchClientesUseCase } from '@/domain/triagem/application/use-cases/fetch-clientes';
 import { FetchPainelUseCase } from '@/domain/triagem/application/use-cases/fetch-painel';
 import { FetchProdutosUseCase } from '@/domain/triagem/application/use-cases/fetch-produtos';
 import { MarcarClienteAptoUseCase } from '@/domain/triagem/application/use-cases/marcar-cliente-apto';
 import { MoverColunaClienteUseCase } from '@/domain/triagem/application/use-cases/mover-coluna-cliente';
+import { MoverEtapaClienteUseCase } from '@/domain/triagem/application/use-cases/mover-etapa-cliente';
 import { CryptographyModule } from '@/infra/cryptography/cryptography.module';
 import { PrismaModule } from '@/infra/prisma/prisma.module';
 import { AlternarWorkflowController } from './controllers/alternar-workflow.controller';
@@ -26,13 +29,16 @@ import { ArquivarTriagemController } from './controllers/arquivar-triagem.contro
 import { AuthenticateController } from './controllers/authenticate.controller';
 import { CreateAccountController } from './controllers/create-account.controller';
 import { CriarClienteController } from './controllers/criar-cliente.controller';
+import { EditarClienteController } from './controllers/editar-cliente.controller';
 import { DeletarClienteController } from './controllers/deletar-cliente.controller';
 import { FetchClientesController } from './controllers/fetch-clientes.controller';
 import { FetchPainelController } from './controllers/fetch-painel.controller';
+import { FetchUsuariosController } from './controllers/fetch-usuarios.controller';
 import { FetchProdutosController } from './controllers/fetch-produtos.controller';
 import { GetProfileController } from './controllers/get-profile.controller';
 import { MarcarClienteAptoController } from './controllers/marcar-cliente-apto.controller';
 import { MoverColunaClienteController } from './controllers/mover-coluna-cliente.controller';
+import { MoverEtapaClienteController } from './controllers/mover-etapa-cliente.controller';
 
 @Module({
   imports: [PrismaModule, CryptographyModule],
@@ -49,6 +55,9 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
     ArquivarTriagemController,
     FetchPainelController,
     AlternarWorkflowController,
+    MoverEtapaClienteController,
+    EditarClienteController,
+    FetchUsuariosController,
   ],
   providers: [
     {
@@ -130,6 +139,26 @@ import { MoverColunaClienteController } from './controllers/mover-coluna-cliente
       useFactory: (workflowRepository: WorkflowRepository) =>
         new AlternarWorkflowUseCase(workflowRepository),
       inject: [WorkflowRepository],
+    },
+    {
+      provide: MoverEtapaClienteUseCase,
+      useFactory: (clientesRepository: ClientesRepository) =>
+        new MoverEtapaClienteUseCase(clientesRepository),
+      inject: [ClientesRepository],
+    },
+    {
+      provide: EditarClienteUseCase,
+      useFactory: (
+        clientesRepository: ClientesRepository,
+        usersRepository: UsersRepository,
+      ) => new EditarClienteUseCase(clientesRepository, usersRepository),
+      inject: [ClientesRepository, UsersRepository],
+    },
+    {
+      provide: FetchUsuariosUseCase,
+      useFactory: (usersRepository: UsersRepository) =>
+        new FetchUsuariosUseCase(usersRepository),
+      inject: [UsersRepository],
     },
   ],
 })

@@ -38,3 +38,30 @@ Authorization: Bearer {{authToken}}
   "coluna": "DOCS"
 }
 
+
+###
+# @name moverEtapa
+PATCH {{baseurl}}/clientes/ID_DO_CLIENTE/etapa
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "etapa": "PROTOCOLO"
+}
+
+###
+# @name editarCliente
+PATCH {{baseurl}}/clientes/ID_DO_CLIENTE
+Content-Type: application/json
+Authorization: Bearer {{authToken}}
+
+{
+  "driveUrl": "https://drive.google.com/drive/folders/ID_DA_PASTA",
+  "observacao": "Falta RG",
+  "responsavelId": null
+}
+
+###
+# @name fetchUsuarios
+GET {{baseurl}}/usuarios
+Authorization: Bearer {{authToken}}
